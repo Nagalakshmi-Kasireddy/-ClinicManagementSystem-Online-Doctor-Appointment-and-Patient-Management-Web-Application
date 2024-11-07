@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointment Booking</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+        }
+
+        form {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .custom-label {
+            margin-top: 1rem;
+            font-style: italic;
+            color: #666;
+            text-align: center;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 0.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .center-btn {
+            text-align: center;
+        }
+
+        .container {
+            justify-content: center;
+            max-width: 400px;
+            flex-direction: column;
+        }
+
+        button {
+            background-color: #4caf50;
+            color: white;
+            padding: 0.7rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: center;
+            margin-left: 100px;
+        }
+
+        h1 {
+            background-color: #252525;
+            padding: 10px;
+            margin: 0;
+            color: #ffffff;
+            text-align: center;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .icon {
+            font-size: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+        }
+
+        .disabled-time {
+            pointer-events: none;
+            opacity: 1.0;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Appointment Booking</h1><br>
+    <div class="container">
+        <label>Name:</label><input id="nameInp" type="text" required><br>
+        <label>Phone no:</label><input id="phoneInp" type="text" required><br>
+        <label>Select Doctor:</label><select id="doctorEmail" required><br>
+            <option value="ram@gmail.com">Dr. Ram</option>
+            <option value="shyam@gmail.com">Dr. Shyam</option>
+            <option value="shalini@gmail.com">Dr. Shalini</option>
+            <option value="ravi@gmail.com">Dr.Ravi</option>
+            <option value="ramesh@gmail.com">Dr. Ramesh</option>
+        </select>
+        <label>Select Time:</label><select id="timeInp" required><br>
+            <option value="08:00-10:00">08:00-10:00</option>
+            <option value="10:00-12:00">10:00-12:00</option>
+            <option value="12:00-13:00">12:00-13:00</option>
+            <option value="14:00-16:00">14:00-16:00</option>
+            <option value="16:00-18:00">16:00-18:00</option>
+        </select><br>
+        <button id="InsBtn">BOOK APPOINTMENT</button>
+    </div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        const firebaseConfig = {
+            apiKey: "AIzaSyBBwj-XFHbxIkfYyVJaXCSqf118A_LYVg8",
+            authDomain: "doctorreg-2fc4a.firebaseapp.com",
+            databaseURL: "https://doctorreg-2fc4a-default-rtdb.firebaseio.com",
+            projectId: "doctorreg-2fc4a",
+            storageBucket: "doctorreg-2fc4a.appspot.com",
+            messagingSenderId: "686704002624",
+            appId: "1:686704002624:web:53dd70a58e0159c4ea41a5"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        const db = getFirestore();
+
+        let nameInp = document.getElementById('nameInp');
+        let phoneInp = document.getElementById('phoneInp');
+        let doctorEmail = document.getElementById('doctorEmail');
+        let timeInp = document.getElementById('timeInp');
+        let Insbtn = document.getElementById('InsBtn');
+
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1) + min);
+        }
+
+        async function generateUniquePatientId() {
+            let isUnique = false;
+            let patientId;
+
+            while (!isUnique) {
+                patientId = getRandomInt(100, 1000);
+                const patientRef = doc(db, "PatientSet", patientId.toString());
+                const patientSnapshot = await getDoc(patientRef);
+
+                if (!patientSnapshot.exists()) {
+                    isUnique = true;
+                }
+            }
+
+            return patientId;
+        }
+
+        //PAYMENT GATEWAY CODE
+           var options = {
+          "key": "rzp_test_jZAhgwrR8jlWOu", // Enter the Key ID generated from the Dashboard
+          "amount": "1000",
+          "currency": "INR",
+          "description": "Acme Corp",
+          "image": "example.com/image/rzp.jpg",
+          "prefill":
+          {
+            "email": "support@gmail.com",
+            "contact": +91731042828,
+          },
+          "handler": function (response) {
+            alert("Appointment booked successfully!");
+            window.location.href = 'patient2.html';
+          },
+          "modal": {
+            "ondismiss": function () {
+              if (confirm("Are you sure, you want to close the form?")) {
+                txt = "You pressed OK!";
+                console.log("Checkout form closed by the user");
+              } else {
+                txt = "You pressed Cancel!";
+                console.log("Complete the Payment")
+              }
+            }
+          }
+        };
+        var rzp1 = new Razorpay(options);
+
+        async function AddDocument_CustomID() {
+            //const patientId = await generateUniquePatientId();
+            //const patientRef = doc(db, "PatientSet", patientId.toString());
+            //await setDoc(patientRef, {
+            //    patientId: patientId,
+            //    name: nameInp.value,
+            //    phone: phoneInp.value,
+            //    doctorEmail: doctorEmail.value,
+            //    time: timeInp.value,
+            //})
+            //    .then(() => {
+                 rzp1.open();
+                 console.log("hello");
+                //alert("Appointment booked successfully!");
+                //window.location.href = 'patient2.html';
+                //}
+                //)
+                //.catch((error) => {
+                //    alert("Error");
+                //});
+        }
+
+        Insbtn.addEventListener("click", AddDocument_CustomID);
+    </script>
+</body>
+
+</html>

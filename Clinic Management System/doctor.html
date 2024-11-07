@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Doctor Dashboard</title>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .task-container {
+            max-width: 500px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .buttons-container {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            right: 20px;
+        }
+
+        .button {
+            padding: 15px;
+            width: 70px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .button-done {
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            font-size: 15px;
+            margin-right: 30px;
+        }
+
+        h1 {
+            background-color: #252525;
+            padding: 10px;
+            margin: 0;
+            color: #ffffff;
+            text-align: center;
+        }
+
+        h2 {
+            color: #333;
+            text-align: left;
+            margin-left: 10px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 10px;
+            list-style: none;
+        }
+
+        .welcome-message {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: #4caf50;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            font-size: 18px;
+        }
+
+        #doneMessage {
+            text-align: center;
+            color: green;
+            font-weight: bold;
+            display: none;
+            font-size: 24px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0, 0, 0);
+            background-color: rgba(0, 0, 0, 0.4);
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .modal-input {
+            width: 100%;
+            margin: 5px 0 20px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            border-radius: 4px;
+            padding: 20px;
+        }
+
+        .modal-buttons-container {
+            text-align: center;
+        }
+
+        .modal-buttons-container button {
+            padding: 10px 15px;
+            margin-right: 10px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-right: 40px;
+        }
+
+        .modal-buttons-container button:hover {
+            opacity: 0.8;
+        }
+
+        .button-transfer {
+            background-color: #2196F3;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            width: 90px;
+            position: absolute;
+            top: 70px;
+            right: 0;
+        }
+
+        .button-cancel {
+            background-color: #FF5733;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            width: 90px;
+        }
+
+        .modal-buttons-container {
+            text-align: center;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: #333;
+            text-align: left;
+            margin: 0;
+            margin-left: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="welcome-message" id="welcomeMessage">Welcome!</div>
+    <h1>Tasks for the day</h1>
+    <br>
+    <h2>Your Patients:</h2>
+    <div class="modal-buttons-container">
+        <button class="button button-transfer" onclick="TransferPatient()">Transfer</button>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, query, where, getDocs, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBBwj-XFHbxIkfYyVJaXCSqf118A_LYVg8",
+            authDomain: "doctorreg-2fc4a.firebaseapp.com",
+            databaseURL: "https://doctorreg-2fc4a-default-rtdb.firebaseio.com",
+            projectId: "doctorreg-2fc4a",
+            storageBucket: "doctorreg-2fc4a.appspot.com",
+            messagingSenderId: "686704002624",
+            appId: "1:686704002624:web:53dd70a58e0159c4ea41a5"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const userEmail = localStorage.getItem('userEmail');
+        let tasksCount = 0;
+        let doneTasksCount = 0;
+
+        function showWelcomeMessage() {
+            const welcomeMessage = document.getElementById('welcomeMessage');
+            welcomeMessage.style.display = 'block';
+
+            setTimeout(() => {
+                welcomeMessage.style.display = 'none';
+            }, 1000);
+        }
+
+        window.addEventListener('load', showWelcomeMessage);
+
+        if (userEmail) {
+            const db = getFirestore(app);
+
+            const patientsCollection = collection(db, 'PatientSet');
+            const patientsQuery = query(patientsCollection, where('doctorEmail', '==', userEmail));
+
+            getDocs(patientsQuery)
+                .then(querySnapshot => {
+                    tasksCount = querySnapshot.size;
+
+                    if (tasksCount === 0) {
+                        const noPatientsMessage = document.createElement('p');
+                        noPatientsMessage.innerText = 'No Patients for today.';
+                        noPatientsMessage.style.textAlign = 'center';
+                        noPatientsMessage.style.fontFamily = 'Arial, sans-serif';
+                        noPatientsMessage.style.fontSize = '24px';
+                        noPatientsMessage.style.color = '#333';
+                        document.body.appendChild(noPatientsMessage);
+                    } else {
+                        const sortedPatients = [];
+                        querySnapshot.forEach(doc => {
+                            sortedPatients.push({ id: doc.id, data: doc.data() });
+                        });
+
+                        sortedPatients.sort((a, b) => {
+                            return a.data.time.localeCompare(b.data.time);
+                        });
+
+                        sortedPatients.forEach(patient => {
+                            const patientContainer = document.createElement('div');
+                            patientContainer.classList.add('task-container');
+
+                            
+                            const patientIdElement = document.createElement('p');
+                            patientIdElement.innerText = `Patient ID: ${patient.data.patientId}`;
+
+                            const nameElement = document.createElement('p');
+                            nameElement.innerText = `Name: ${patient.data.name}`;
+
+                            const timeElement = document.createElement('p');
+                            timeElement.innerText = `Time: ${patient.data.time}`;
+
+                            const buttonsContainer = document.createElement('div');
+                            buttonsContainer.classList.add('buttons-container');
+
+                            const buttonDone = document.createElement('button');
+                            buttonDone.classList.add('button', 'button-done');
+                            buttonDone.innerText = 'Done';
+
+                            buttonDone.addEventListener('click', () => {
+                                deletePatientData(patient.id);
+
+                                patientContainer.style.display = 'none';
+                                doneTasksCount++;
+
+                                if (doneTasksCount === tasksCount) {
+                                    const doneMessage = document.getElementById('doneMessage');
+                                    doneMessage.style.display = 'block';
+                                }
+                            });
+
+                            buttonsContainer.appendChild(buttonDone);
+
+                            patientContainer.appendChild(patientIdElement);
+                            patientContainer.appendChild(nameElement);
+                            patientContainer.appendChild(timeElement);
+                            patientContainer.appendChild(buttonsContainer);
+
+                            document.body.appendChild(patientContainer);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching patients:', error);
+                });
+
+        } else {
+            console.log('User email not found in localStorage.');
+        }
+
+        function deletePatientData(patientId) {
+            const db = getFirestore(app);
+            const patientRef = doc(db, 'PatientSet', patientId);
+
+            deleteDoc(patientRef)
+                .then(() => {
+                    console.log('Patient data deleted successfully');
+                })
+                .catch(error => {
+                    console.error('Error deleting patient data:', error);
+                });
+        }
+    </script>
+    <script>
+        function TransferPatient() {
+            window.location.href = 'transfer.html';
+        }
+    </script>
+    <div id="doneMessage">You are done for the day!</div>
+</body>
+</html>

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transfer Tasks</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+        }
+
+        form {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .custom-label {
+            margin-top: 1rem;
+            font-style: italic;
+            color: #666;
+            text-align: center;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 0.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .center-btn {
+            text-align: center;
+        }
+
+        .container {
+            justify-content: center;
+            max-width: 400px;
+            flex-direction: column;
+        }
+
+        button {
+            color: white;
+            padding: 0.7rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: center;
+            margin-left: 100px;
+            margin: 0 5px;
+        }
+
+        h1 {
+            background-color: #252525;
+            padding: 10px;
+            margin: 0;
+            color: #ffffff;
+            text-align: center;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .icon {
+            font-size: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .disabled-time {
+            pointer-events: none;
+            opacity: 1.0;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Transfer Patient
+        <div onclick="goBack()" style="cursor: pointer; font-size: 25px; position: fixed; top: 12px; right: 30px;">
+            &#10006;</div>
+    </h1><br>
+    <div class="container">
+        <label>Name:</label><input id="nameInp" type="text" required><br>
+        <label>Patient ID:</label><input id="patientId" type="text" required><br>
+        <label>Select Doctor:</label><select id="doctorEmail" required><br>
+            <option value="ram@gmail.com">Dr. Ram</option>
+            <option value="shyam@gmail.com">Dr. shyam</option>
+            <option value="shalini@gmail.com">Dr. shalini</option>
+            <option value="shruti@gmail.com">Dr. Shruti Sharma</option>
+            <option value="ramesh@gmail.com">Dr. Ramesh</option>
+        </select>
+        <label>Select Time:</label><select id="timeInp" required><br>
+            <option value="08:00-10:00">08:00-10:00</option>
+            <option value="10:00-12:00">10:00-12:00</option>
+            <option value="12:00-13:00">12:00-13:00</option>
+            <option value="14:00-16:00">14:00-16:00</option>
+            <option value="16:00-18:00">16:00-18:00</option>
+        </select><br><br>
+        <div class="button-container">
+            <button id="SelBtn" style="background-color: #252525; color: #fff; width: 140px;">RETRIEVE</button>
+            <button id="UpdBtn" style="background-color: #252525; color: #fff; width: 140px">TRANSFER</button>
+            <button id="DelBtn" style="background-color: #252525; color: #fff; width: 140px">CANCEL</button>
+
+        </div>
+    </div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        const firebaseConfig = {
+            apiKey: "AIzaSyBBwj-XFHbxIkfYyVJaXCSqf118A_LYVg8",
+            authDomain: "doctorreg-2fc4a.firebaseapp.com",
+            databaseURL: "https://doctorreg-2fc4a-default-rtdb.firebaseio.com",
+            projectId: "doctorreg-2fc4a",
+            storageBucket: "doctorreg-2fc4a.appspot.com",
+            messagingSenderId: "686704002624",
+            appId: "1:686704002624:web:53dd70a58e0159c4ea41a5"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        import { getFirestore, doc, setDoc, deleteDoc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        const db = getFirestore();
+        let nameInp = document.getElementById('nameInp');
+        let phoneInp = document.getElementById('phoneInp');
+        let doctorEmail = document.getElementById('doctorEmail');
+        let timeInp = document.getElementById('timeInp');
+
+        let Insbtn = document.getElementById('InsBtn');
+        let Selbtn = document.getElementById('SelBtn');
+        let Updbtn = document.getElementById('UpdBtn');
+        let Delbtn = document.getElementById('DelBtn');
+
+        async function GetADocument() {
+            const patientRef = doc(db, "PatientSet", patientId.value);
+            const docSnap = await getDoc(patientRef);
+
+            if (docSnap.exists()) {
+                nameInp.value = docSnap.data().name;
+                doctorEmail.value = docSnap.data().doctorEmail;
+                timeInp.value = docSnap.data().time;
+            }
+            else {
+                alert("No such patient");
+            }
+
+        }
+
+        async function UpdateDocument() {
+            const patientRef = doc(db, "PatientSet", patientId.value);
+
+            await updateDoc(patientRef, {
+                name: nameInp.value,
+                doctorEmail: doctorEmail.value,
+                time: timeInp.value,
+            })
+                .then(() => {
+                    alert("Patient Transferred successfully");
+                })
+                .catch((error) => {
+                    alert("Error");
+                });
+        }
+
+        async function deleteDocument() {
+            const patientRef = doc(db, "PatientSet", patientId.value);
+
+            await deleteDoc(patientRef)
+                .then(() => {
+                    alert("Data deleted successfully");
+                })
+                .catch((error) => {
+                    alert("Error");
+                });
+        }
+        Selbtn.addEventListener("click", GetADocument);
+        Updbtn.addEventListener("click", UpdateDocument);
+        Delbtn.addEventListener("click", deleteDocument);
+
+    </script>
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Register</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .container {
+            justify-content: center;
+            align-items: center;
+        }
+
+        form {
+            max-width: 600px;
+            width: 100%;
+            padding: 2rem;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 0.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .center-btn {
+            text-align: center;
+        }
+
+        button {
+            width: 70%;
+            background-color: #4caf50;
+            color: white;
+            padding: 0.7rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .icon {
+            font-size: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+        }
+
+        #addImage {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        #customImage {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .disabled-time {
+            pointer-events: none;
+            opacity: 1.0;
+        }
+    </style>
+</head>
+
+<body>
+    <form id="MainForm">
+        <div class="container">
+            <div id="addImage">
+                <img src="images/loginimg.png" class="img-fluid" id="customImage">
+            </div>
+            <div class="form-outline mb-4">
+                <label for="floatingInput">Email address:</label>
+                <input type="email" class="form-control" id="emailInp" placeholder="name@example.com">
+            </div>
+            <div class="form-outline mb-4">
+                <label for="floatingPassword">Password:</label>
+                <input type="password" class="form-control" id="passwordInp" placeholder="Password">
+            </div>
+            <div class="row mb-4">
+                <div class="col d-flex justify-content-center">
+                    <button type="submit" class="button">Login</button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+        crossorigin="anonymous"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyB0YPYdR4XzuTvaETPtPIt9NM_JWSyy90c",
+            authDomain: "backend-b1818.firebaseapp.com",
+            databaseURL: "https://backend-b1818-default-rtdb.firebaseio.com",
+            projectId: "backend-b1818",
+            storageBucket: "backend-b1818.appspot.com",
+            messagingSenderId: "431165968027",
+            appId: "1:431165968027:web:63bf01d1c168377db7803e"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase();
+        const auth = getAuth(app);
+
+        const EmailInp = document.getElementById('emailInp');
+        const PassInp = document.getElementById('passwordInp');
+        const MainForm = document.getElementById('MainForm');
+
+        MainForm.addEventListener('submit', signInUser);
+
+        function signInUser(evt) {
+            evt.preventDefault();
+            signInWithEmailAndPassword(auth, EmailInp.value, PassInp.value)
+                .then((credentials) => {
+                    console.log(credentials);
+                    localStorage.setItem('userEmail', EmailInp.value); 
+                    window.location.href = 'doctor.html';
+                })
+                .catch((error) => {
+                    alert(error.message);
+                    console.log(error.code);
+                    console.log(error.message);
+                });
+        }
+    </script>
+</body>
+</html>

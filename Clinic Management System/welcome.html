@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            animation: fadeIn 2s ease-in-out;
+        }
+
+        h1 {
+            font-size: 2em;
+            text-align: center;
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+    </style>
+    <title>Welcome</title>
+</head>
+<body>
+    <h1>Welcome!</h1>
+    <script>
+        setTimeout(() => {
+            window.location.href = 'patient2.html';
+        }, 3000); 
+    </script>
+</body>
+</html>

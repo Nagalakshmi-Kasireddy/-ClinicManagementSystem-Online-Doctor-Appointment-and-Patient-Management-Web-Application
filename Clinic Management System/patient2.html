@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            font-family: Roboto, sans-serif;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .container {
+            display: flex;
+            align-items: center;
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin: 10px;
+            cursor: pointer;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .container img {
+            max-width: 80px;
+            height: auto;
+            border-radius: 50%;
+            margin-right: 20px;
+        }
+
+        .container-text {
+            flex-grow: 1;
+        }
+
+        .container-text p:first-child {
+            font-weight: bold;
+        }
+
+        .bottom-dock {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #333;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .bottom-dock button {
+            margin: 0;
+            color: #fff;
+            background-color: #555;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .bottom-dock button:hover {
+            background-color: #777;
+        }
+
+        .icon {
+            font-size: 1.5rem;
+        }
+
+        h1 {
+            background-color: #252525;
+            padding: 10px;
+            margin: 0;
+            color: #ffffff;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column-reverse;
+                align-items: center;
+                text-align: center;
+                padding: 10px;
+            }
+
+            .container img {
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+    <title>Doctors List</title>
+</head>
+
+<body>
+    <h1>Doctors Available</h1>
+    <div class="container" onclick="openDetails('doctor1')">
+        <img src="images/doctor1.jpg" alt="Doctor 1">
+        <div class="container-text">
+            <p><strong>Dr. Akash Roy</strong></p>
+            <p>Cardiologist</p>
+            <p>MD in Cardiology, ABC Medical School</p>
+            <p>10+ years of experience</p>
+            <p>A dedicated cardiologist with a passion for improving heart health.</p>
+        </div>
+    </div>
+
+    <div class="container" onclick="openDetails('doctor2')">
+        <img src="images/doctor2.jpg" alt="Doctor 2">
+        <div class="container-text">
+            <p><strong>Dr. Jane Barnes</strong></p>
+            <p>Pediatrician</p>
+            <p>MD in Pediatrics, XYZ Medical College</p>
+            <p>8+ years of experience</p>
+            <p>Specialized in providing comprehensive care for children and adolescents.</p>
+        </div>
+    </div>
+
+    <div class="container" onclick="openDetails('doctor3')">
+        <img src="images/doctor3.jpg" alt="Doctor 3">
+        <div class="container-text">
+            <p><strong>Dr. Michael Scott</strong></p>
+            <p>Orthopedic Surgeon</p>
+            <p>MS in Orthopedics, DEF University</p>
+            <p>12+ years of experience</p>
+            <p>Expert in diagnosing and treating musculoskeletal conditions.</p>
+        </div>
+    </div>
+
+    <div class="container" onclick="openDetails('doctor4')">
+        <img src="images/doctor4.jpg" alt="Doctor 4">
+        <div class="container-text">
+            <p><strong>Dr. Shruti Sharma</strong></p>
+            <p>OB-GYN</p>
+            <p>MD in Obstetrics and Gynecology, GHI Medical Institute</p>
+            <p>9+ years of experience</p>
+            <p>Passionate about women's health and providing personalized care.</p>
+        </div>
+    </div>
+
+    <div class="container" onclick="openDetails('doctor5')">
+        <img src="images/doctor5.jpg" alt="Doctor 5">
+        <div class="container-text">
+            <p><strong>Dr. Robert Green</strong></p>
+            <p>Neurologist</p>
+            <p>PhD in Neurology, JKL University</p>
+            <p>15+ years of experience</p>
+            <p>Specializes in the diagnosis and treatment of neurological disorders.</p>
+        </div>
+    </div>
+
+    <!-- Repeating similar containers for other doctors -->
+
+    <script>
+        function openDetails(doctorId) {
+            window.location.href = `details.html?doctor=${doctorId}`;
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            font-family: Roboto, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+
+        .doctor-details {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .doctor-details img {
+            max-width: 50%;
+            border-radius: 50%;
+            margin: 0 auto 10px;
+        }
+
+        .book-appointment-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 16px;
+            cursor: pointer;
+            margin: auto;
+        }
+
+        .book-appointment-btn:hover {
+            background-color: #45a049;
+        }
+
+        .icon {
+            font-size: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+        }
+    </style>
+    <title>Doctor Details</title>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="doctor-details" id="doctorDetailsContainer">
+        </div>
+    </div>
+
+    <script>
+
+        function getDoctorIdFromURL() {
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+            return urlParams.get('doctor');
+        }
+
+        function displayDoctorDetails(doctorId) {
+            const doctorData = {
+                doctor1: {
+                    name: "Dr. Ram",
+                    specialty: "Cardiologist",
+                    education: "MD in Cardiology, ABC Medical School",
+                    experience: "10+ years of experience",
+                    description: "A distinguished Cardiologist, Dr. Ram possesses an MD in Cardiology from ABC Medical School. With over a decade of experience, he is a dedicated practitioner with a profound commitment to enhancing heart health. Patients trust his expertise in diagnosing and treating cardiac conditions, and he continues to be a catalyst for positive change in the realm of cardiology.",
+                },
+                doctor2: {
+                    name: "Dr. Shyam",
+                    specialty: "Pediatrician",
+                    education: "MD in Pediatrics, XYZ Medical College",
+                    experience: "8+ years of experience",
+                    description: "Dr.shyam, a Pediatrician with an MD from XYZ Medical College, has devoted over 8 years to delivering comprehensive healthcare to children and adolescents. Her specialization lies in nurturing the well-being of young patients, providing a caring and holistic approach. Dr. Barnes stands out for her unwavering commitment to the health and happiness of her pediatric patients.",
+                },
+                doctor3: {
+                    name: "Dr. shalini",
+                    specialty: "Orthopedic Surgeon",
+                    education: "MS in Orthopedics, DEF University",
+                    experience: "12+ years of experience",
+                    description: "Renowned Orthopedic Surgeon Dr. shalini, with an MS in Orthopedics from DEF University, brings over 12 years of expertise to the table. A true authority in musculoskeletal conditions, Dr. Scott excels in diagnosis and treatment. Patients benefit from his extensive knowledge, compassionate care, and commitment to restoring mobility and function.",
+                },
+                doctor4: {
+                    name: "Dr. Ravi",
+                    specialty: "OB-GYN",
+                    education: "MD in Obstetrics and Gynecology, GHI Medical Institute",
+                    experience: "9+ years of experience",
+                    description: "Dr. ravi, an OB-GYN, holds an MD in Obstetrics and Gynecology from GHI Medical Institute, backed by 9+ years of experience. Her passion for women's health is palpable, and she is dedicated to providing personalized care. Dr. Sharma's commitment extends beyond medical expertise, making her a trusted ally in the well-being of women.",
+                },
+                doctor5: {
+                    name: "Dr. Ramesh",
+                    specialty: "Neurologist",
+                    education: "PhD in Neurology, JKL University",
+                    experience: "15+ years of experience",
+                    description: "Dr. Ramesh, a distinguished Neurologist, boasts a PhD in Neurology from JKL University and over 15 years of experience. His specialization lies in the diagnosis and treatment of neurological disorders. Dr. Green is recognized for his unwavering commitment to advancing neurology, enhancing patient outcomes, and contributing to the broader understanding of neurological conditions.",
+                },
+            };
+
+            const doctorDetailsContainer = document.getElementById('doctorDetailsContainer');
+
+            if (doctorData[doctorId]) {
+                const doctor = doctorData[doctorId];
+                const html = `
+                    <img src="images/${doctorId}.jpg" alt="${doctor.name}">
+                    <h2>${doctor.name}</h2>
+                    <p><strong>Specialty:</strong> ${doctor.specialty}</p>
+                    <p><strong>Education:</strong> ${doctor.education}</p>
+                    <p><strong>Experience:</strong> ${doctor.experience}</p>
+                    <p>${doctor.description}</p>
+                    <button class="book-appointment-btn" onclick="bookAppointment()">Book Appointment</button>
+                `;
+                doctorDetailsContainer.innerHTML = html;
+            } else {
+                doctorDetailsContainer.innerHTML = '<p>Doctor not found.</p>';
+            }
+        }
+
+        function bookAppointment() {
+            window.location.href = 'appointmentbook.html';
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const doctorId = getDoctorIdFromURL();
+            if (doctorId) {
+                displayDoctorDetails(doctorId);
+            } else {
+                document.getElementById('doctorDetailsContainer').innerHTML = '<p>No doctor selected.</p>';
+            }
+        });
+    </script>
+</body>
+
+</html>
